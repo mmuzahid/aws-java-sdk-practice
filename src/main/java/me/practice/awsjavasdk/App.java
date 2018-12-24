@@ -9,6 +9,6 @@ import java.security.spec.InvalidKeySpecException;
  */
 public class App {
 	public static void main(String[] args) throws InvalidKeySpecException, IOException {
-		System.out.println("Hello World!");
+		System.out.println("Hello World!" + AppConfig.getCloudfrontUrl());
 	}
 }
