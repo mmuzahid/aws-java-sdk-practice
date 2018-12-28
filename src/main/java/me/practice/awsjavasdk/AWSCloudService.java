@@ -13,6 +13,8 @@ import com.amazonaws.services.cloudfront.util.SignerUtils.Protocol;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 
 /**
  * Class for AWS Services e.g. S3 and CloudFront
@@ -36,13 +38,8 @@ public class AWSCloudService {
 	}
 
 	public static String getS3SignedURL(String s3ObjectKey) {
-		String clientRegion = AppConfig.getS3ClientRegion();
 		String bucketName = AppConfig.getS3Bucket();
-
-		BasicAWSCredentials awsCreds = new BasicAWSCredentials(AppConfig.getS3AccessKey(), AppConfig.getS3SecretKey());
-
-		AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withRegion(clientRegion)
-				.withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
+		AmazonS3 s3Client = getS3Client();
 
 		java.util.Date expiration = new java.util.Date();
 		long expTimeMillis = expiration.getTime();
@@ -56,4 +53,31 @@ public class AWSCloudService {
 		return url.toString();
 	}
 
+	private static AmazonS3 getS3Client() {
+		String clientRegion = AppConfig.getS3ClientRegion();
+		
+		BasicAWSCredentials awsCreds = new BasicAWSCredentials(AppConfig.getS3AccessKey(), AppConfig.getS3SecretKey());
+
+		AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withRegion(clientRegion)
+				.withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
+		return s3Client;
+	}
+
+	
+	public static void saveS3Object(String s3ObjectKey) throws IOException {
+		String bucketName = AppConfig.getS3Bucket();
+		AmazonS3 s3Client = getS3Client();
+
+		String destinationFileName = "D:/" + s3ObjectKey.substring(s3ObjectKey.lastIndexOf("/") + 1);
+		
+		File localFile = new File(destinationFileName);
+		ObjectMetadata object = s3Client.getObject(new GetObjectRequest(bucketName, s3ObjectKey), localFile);
+
+	}
+	
+	public static void getCloudFrontObjectStream() {
+		
+	}
+	
+	
 }
